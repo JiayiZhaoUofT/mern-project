@@ -6,7 +6,7 @@ mongoose
   .catch(err => console.log(err));
 //add new schema to database
 require("./models/User.js");
-
+const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
@@ -15,7 +15,8 @@ const app = express();
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
-
+//express static is in charge of sending static files
+app.use(express.static(path.join(__dirname, "client", "build")));
 //connect to mongoDB
 
 const users = require("./routes/api/users");
@@ -28,6 +29,10 @@ require("./config/passport")(passport);
 
 //Routes
 app.use("/api/users", users);
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "client", "build", "index.html"));
+});
 
 const port = process.env.PORT || 5000;
 app.listen(port, () => console.log(`server up and running on port ${port}!`));
